@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deepfake Detector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 24px;
+        }
+        .upload-container {
+            background-color: #fff;
+            padding: 40px;
+            width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .drop-zone {
+            border: 2px dashed #00bcd4;
+            padding: 40px;
+            border-radius: 10px;
+            font-size: 16px;
+            color: #00bcd4;
+            cursor: pointer;
+            background-color: #f9f9f9;
+        }
+        .drop-zone:hover {
+            background-color: #e1f5f8;
+        }
+        .drop-zone input[type="file"] {
+            display: none;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .info-text {
+            font-size: 14px;
+            color: #555;
+            margin-top: 10px;
+        }
+
+        /* Loading bar styling */
+        .loading-container {
+            display: none;
+            margin-top: 20px;
+            width: 100%;
+            background-color: #f4f4f4;
+            border-radius: 10px;
+        }
+        .loading-bar {
+            height: 20px;
+            width: 0%;
+            background-color: #4CAF50;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="upload-container">
+        <h2>Upload a video for Deepfake Detection</h2>
+        
+        <!-- Form to submit video -->
+        <form id="upload-form" action="/predict" method="post" enctype="multipart/form-data">
+            <!-- Drag and drop area with Browse option -->
+            <div class="drop-zone" id="drop-zone">
+                <p>Drag and drop video file here</p>
+                <p>or</p>
+                <label for="file-input" class="button">Browse</label>
+                <input type="file" id="file-input" name="file" accept="video/*" required>
+            </div>
+
+            <button class="button" type="submit">Submit</button>
+        </form>
+
+        <!-- Loading bar -->
+        <div class="loading-container" id="loading-container">
+            <div class="loading-bar" id="loading-bar"></div>
+        </div>
+
+        <p class="info-text">You can upload MP4, AVI, MKV, or other video formats.</p>
+    </div>
+
+    <script>
+        // Handle drag and drop events
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const uploadForm = document.getElementById('upload-form');
+        const loadingContainer = document.getElementById('loading-container');
+        const loadingBar = document.getElementById('loading-bar');
+        
+        // Show selected file in drop-zone area
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dropZone.style.backgroundColor = "#e1f5f8";
+        });
+
+        dropZone.addEventListener('dragleave', function() {
+            dropZone.style.backgroundColor = "#f9f9f9";
+        });
+
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dropZone.style.backgroundColor = "#f9f9f9";
+            const file = e.dataTransfer.files[0];
+            fileInput.files = e.dataTransfer.files;
+            dropZone.querySelector('p').textContent = `Selected file: ${file.name}`;
+        });
+
+        // Optionally, handle file selection via the Browse button
+        fileInput.addEventListener('change', function() {
+            const file = fileInput.files[0];
+            if (file) {
+                dropZone.querySelector('p').textContent = `Selected file: ${file.name}`;
+            }
+        });
+
+        // Ensure the form submits correctly (in case of drag-and-drop)
+        uploadForm.addEventListener('submit', function(e) {
+            e.preventDefault();  // Prevent default form submission
+
+            // Show the loading bar
+            loadingContainer.style.display = 'block';
+
+            const formData = new FormData(uploadForm);
+
+            // Create a new XMLHttpRequest to upload the video file
+            const xhr = new XMLHttpRequest();
+
+            // Start the progress bar animation with a slow update
+            let progress = 0;
+            const slowProgress = setInterval(function() {
+                if (progress < 100) {
+                    progress += 0.1; // Slowly increase the progress by 0.5% every 100ms
+                    loadingBar.style.width = progress + '%';
+                }
+            }, 10); // Slow progress animation every 100ms
+
+            // Listen to the progress of the file upload
+            xhr.upload.addEventListener('progress', function(e) {
+                if (e.lengthComputable) {
+                    const percent = (e.loaded / e.total) * 100;
+                    // Gradually update the progress (only if it's greater than the current progress)
+                    if (percent > progress) {
+                        progress = percent;
+                    }
+                    loadingBar.style.width = progress + '%';
+                }
+            });
+
+            // On request complete
+            xhr.onload = function() {
+                clearInterval(slowProgress);  // Stop the slow progress animation once the upload is complete
+                if (xhr.status === 200) {
+                    // When the upload is complete, hide the loading bar and show results
+                    loadingBar.style.width = '100%';
+
+                    // Assuming the server returns HTML for the result page
+                    document.open();
+                    document.write(xhr.responseText);
+                    document.close();
+                } else {
+                    console.error("Error during upload:", xhr.statusText);
+                }
+            };
+
+            // Handle errors
+            xhr.onerror = function() {
+                clearInterval(slowProgress);  // Stop the progress animation on error
+                console.error("Request failed");
+            };
+
+            // Open and send the request
+            xhr.open('POST', '/predict', true);
+            xhr.send(formData);
+        });
+    </script>
+
+</body>
+</html>
