@@ -1,6 +1,0 @@
-flask
-flask-ngrok
-flask-cors
-opencv-python
-streamlit
-tensorflow==2.15.0
