@@ -1,6 +1,6 @@
 flask
 flask-ngrok
 flask-cors
-tensorflow
 opencv-python
 python-3.10
+tensorflow==2.15.0
