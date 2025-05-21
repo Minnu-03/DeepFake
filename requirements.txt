@@ -1,0 +1,7 @@
+flask
+flask-ngrok
+flask-cors
+tensorflow==2.15.0
+opencv-python
+streamlit
+
