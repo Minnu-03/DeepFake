@@ -4,12 +4,12 @@ from time import sleep
 
 FLASK_API_URL = "http://127.0.0.1:5002/predict?api=true"
 
-# Set Streamlit page configuration
+# Setting Streamlit page configuration
 st.set_page_config(
     page_title="Deepfake Detector",
-    page_icon="🎥", # You can use an emoji or a path to an image file
-    layout="centered", # Can be "wide"
-    initial_sidebar_state="auto" # Can be "expanded" or "collapsed"
+    page_icon="🎥", 
+    layout="centered", 
+    initial_sidebar_state="auto"
 )
 
 # --- Header Section ---
@@ -115,7 +115,7 @@ st.subheader("Contact Us")
 st.markdown(
     """
     For questions, feedback, or collaborations, please feel free to reach out:
-    * **Email:** [support@team2.com](mailto:support@yourcompany.com)
+    * **Email:** [minnusrithumnoori03@gmail.com](mailto:support@yourcompany.com)
     * **Website:** www.team2.com
     * **GitHub:** https://github.com/Minnu-03 
     """
