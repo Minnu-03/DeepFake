@@ -7,6 +7,7 @@ Deepfake videos, which use AI to manipulate visual content, pose significant ris
 
 This project presents a lightweight yet powerful solution that detects deepfakes by identifying subtle inconsistencies in facial features, movements, lighting, and pixel-level artifacts.  
 It combines a responsive web interface with real-time backend analysis powered by a deep learning model based on the Xception architecture.
+
 ---
 
 ## 🛠️ Tech Stack
