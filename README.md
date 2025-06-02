@@ -31,7 +31,7 @@ This project uses a deep learning pipeline powered by the **Xception** architect
   - Lighting inconsistencies
   - Lack of imperfections or facial asymmetry
 
-📎 **Download Trained Model **: https://drive.google.com/drive/folders/17REF5E-DvYx3H_g_ZvTOLS8DX5-q0YIT?usp=drive_link
+📎 Download Trained Model: https://drive.google.com/drive/folders/17REF5E-DvYx3H_g_ZvTOLS8DX5-q0YIT?usp=drive_link
 
 ### 🔸 Dataset
 - **UADFV Dataset**: Contains 98 videos (49 real + 49 deepfakes).
